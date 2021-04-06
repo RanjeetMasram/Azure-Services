@@ -1,0 +1,56 @@
+/@{formartDateTime(utcnow(),'yyyy')}/@{formatDateTime(utcnow(),'MM')}/@{formatDateTime(utcnow(),'dd')}
+
+SELECT PurchaseId, EmailId, Product, QuantityPurchased, DateOfPurchase FROM PurchaseDetails WHERE CONVERT(DATE, DateOfPurchase) = '@{formatDateTime(utcnow(),'yyyy-MM-dd')}'
+
+/@{formatDateTime(utcnow(),'yyyy')}/@{formatDateTime(utcnow(),'MM')}/@{formatDateTime(utcnow(),'dd')}
+
+
+
+Azure DataFactory
+================
+- Pipeline
+- Activity
+	- Movement
+	- Transform
+	- Control
+- DataSet
+- Linked Services
+
+
+We will See
+How to create an Azure Data Factory
+What is a need of linked services and its creation
+The need for dataset and its creation
+How to create a pipeline and add the activity to copy the data
+How to transform the data
+How to schedule the trigger to execute the pipeline
+
+
+Need for App Registration
+
+Delta Table - 
+Detla Format - merge
+
+
+Hive_SQL()
+Python()  
+Spark()
+
+Limit()
+Describe SQL()
+
+
+RDD and Dataframe
+
+Transformations
+Create Table using Spark.SQL
+Sample data RDD	
+In_Memory Computation 
+
+==========================================================================
+Create production workloads on Azure Databricks with Azure Data Factory
+=========================================================================
+https://docs.microsoft.com/en-us/learn/modules/create-production-workloads-azure-databricks-azure-data-factory/?WT.mc_id=api_CatalogApi
+
+
+

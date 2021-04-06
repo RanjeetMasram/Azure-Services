@@ -1,0 +1,43 @@
+
+Demo : Performing Adavnced Transformations using UDF
+-----------------------------------------------------------------------------------
+
+Download the VehiclDetails.json and load the file into the datacontainer of azure data lake store
+
+Replace the APPLICATION-ID, AUTHENTICATION-KEY and TENANT-ID of your app registration in the below code
+
+	spark.conf.set("dfs.adls.oauth2.access.token.provider.type", "ClientCredential")
+	spark.conf.set("dfs.adls.oauth2.client.id", "<APPLICATION-ID>")
+	spark.conf.set("dfs.adls.oauth2.credential", "<AUTHENTICATION-KEY>")
+	spark.conf.set("dfs.adls.oauth2.refresh.url", "https://login.microsoftonline.com/<TENANT-ID>/oauth2/token")
+
+If you have created the data lake and the container with different names , change the below code accordingly
+
+	val vehicleDetails = spark.read.json("adl://datavtech.azuredatalakestore.net/datacontainer/VehicleDetails.json")
+	vehicleDetails.show()
+
+Write the below code to create a local function
+
+	def CalculateDiscount(price: Double,discount:Double):Double=price-(discount/100*price);
+
+Write the below code to create an user defined function
+
+	val discountUDF=udf[Double,Double,Double](CalculateDiscount)
+
+Write the below code register the user defined function within Spark session
+
+	spark.udf.register("discount_UDF",discountUDF)
+
+Below code is to create a temporary view and display the output
+
+	vehicleDetails.createOrReplaceTempView("vehicle_table")
+	spark.sql("select VehicleId, VehicleName, Price from vehicle_table").show()
+
+To invoke the user defined function , write the code as shown below and execute
+	
+	spark.sql("select VehicleId,Price,discount_UDF(Price,20) as DicountedPrice from vehicle_table").show()
+
+
+
+
+

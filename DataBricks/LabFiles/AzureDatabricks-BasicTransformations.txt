@@ -1,0 +1,67 @@
+
+Demo : Performing Basic Transformations with Azure Databricks
+-----------------------------------------------------------------------------------
+
+Create a data lake store named as "datavtech" and create a container named as "datacontainer"
+Download the VehiclDetails.json and load the file into the datacontainer of azure data lake store
+
+Replace the APPLICATION-ID, AUTHENTICATION-KEY and TENANT-ID of your app registration in the below code
+
+	spark.conf.set("dfs.adls.oauth2.access.token.provider.type", "ClientCredential")
+	spark.conf.set("dfs.adls.oauth2.client.id", "<APPLICATION-ID>")
+	spark.conf.set("dfs.adls.oauth2.credential", "<AUTHENTICATION-KEY>")
+	spark.conf.set("dfs.adls.oauth2.refresh.url", "https://login.microsoftonline.com/<TENANT-ID>/oauth2/token")
+
+If you have created the data lake and the container with different names , change the below code accordingly
+
+	val vehicleDetails = spark.read.json("adl://datavtech.azuredatalakestore.net/datacontainer/VehicleDetails.json")
+	vehicleDetails.show()
+
+To read the specific columns , write and execute the below code
+
+	val specificColumns = vehicleDetails.select("VehicleName", "QuantityAvailable", "Price")
+	specificColumns.show()
+
+To rename the column , write and execute the below code
+
+	val renamedColumn = specificColumns.withColumnRenamed("Price", "VehiclePrice")
+	renamedColumn.show()
+
+Replace the name of storage account , container and storage account key of your storage account in the below code
+
+	val blobStorage = "vtechstorage.blob.core.windows.net"
+	val blobContainer = "datacontainer"
+	val blobAccessKey = "88ktBEumpsE6BnCF4EkPcysGmYwAA8B8EgvZpPeUbSVzrzv3C/wooa1hhlSnnEQpWKFL9Jmkn9hGrFvEqASbqg=="
+
+write the below code to create a temperory folder
+
+	val tempDir = "wasbs://" + blobContainer + "@" + blobStorage +"/tempDirs"
+	val acntInfo = "fs.azure.account.key."+ blobStorage
+	sc.hadoopConfiguration.set(acntInfo, blobAccessKey)
+
+write the below code to connect to SQL Datawarehouse
+
+	val dwDatabase = "vtechdw"
+	val dwServer = "vtech-server"
+	val dwUser = "vtechuser"
+	val dwPass = "password@123"
+	val dwJdbcPort = "1433"
+	val dwJdbcExtraOptions ="encrypt=true;trustServerCertificate=true;hostNameInCertificate=*.database.windows.net;loginTimeout=30;"
+	val sqlDwUrl = "jdbc:sqlserver://" + dwServer + ".database.windows.net:" + dwJdbcPort + ";database=" +
+	dwDatabase + ";user=" + dwUser+";password=" + dwPass + ";$dwJdbcExtraOptions"
+	val sqlDwUrlSmall = "jdbc:sqlserver://" + dwServer + ".database.windows.net:" + dwJdbcPort +";database=" + dwDatabase + ";user=" + dwUser+";password=" + 		dwPass
+
+
+Execute the below code snippet to load the data into the SQL data warehouse
+
+	spark.conf.set("spark.sql.parquet.writeLegacyFormat","true")
+	renamedColumn.write
+	.format("com.databricks.spark.sqldw")
+	.option("url", sqlDwUrlSmall)
+	.option("dbtable", "VehicleDetails")
+	.option( "forward_spark_azure_storage_credentials","True")
+	.option("tempdir", tempDir)
+	.mode("overwrite")
+	.save()
+
+
