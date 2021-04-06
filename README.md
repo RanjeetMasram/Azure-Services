@@ -4,11 +4,11 @@
 Contains basic Azure Data Factory Demo
 
 Azure Data Factory Contents
-1.	Introduction to Azure Data Factory	2
-2.	Major Component	2
-3.	Scenario	3
-4.	Creating Azure Data Factory	4
-5.	App Registration	5
+1.	Introduction to Azure Data Factory	
+2.	Major Component	
+3.	Demo Scenario	
+4.	Creating Azure Data Factory	
+5.	App Registration	
 5.1.	Need for App Registration	5
 5.2.	Creating App Registration	5
 5.3.	App Registration Creation	6
